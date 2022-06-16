@@ -13,18 +13,13 @@ const rating = "g";
 let q = "puppy";
 
 
-
-gifForm.addEventListener("submit", async (evt) =>{
-
-    evt.preventDefault();
-    gifField.innerHTML = `<div id="holder">
-    </div>
-    `
-    let word = evt.target.search.value;
-    console.log("evt.target.search.value = ", word);
+async function getResults(word){
+    offset = currPage * limit;
 
     let apiUrl = `http://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${word}&limit=${limit}&offset=${offset}&rating=${rating}`;
     console.log(apiUrl);
+
+   
 
     try{
 
@@ -33,12 +28,27 @@ gifForm.addEventListener("submit", async (evt) =>{
         let responseData = await response.json();
         console.log("responseData is: ", responseData);
         displayResults(responseData);
-        document.getElementById("search").value = "";
+        return responseData;
+
     } catch(e){
         console.log(e);
     }
 
+}
 
+
+gifForm.addEventListener("submit", async (evt) =>{
+    offset = 0;
+
+    evt.preventDefault();
+    gifField.innerHTML = `<div id="holder">
+    </div>
+    `
+    q = evt.target.search.value;
+    console.log("evt.target.search.value = ", q);
+    getResults(q);
+    moreButton.classList.remove("hidden");
+    document.getElementById("search").value = "";
 
 
 });
@@ -56,6 +66,13 @@ function displayResults(respData){
 
 }
 
-//moreButton.addEventListener("click", () =>{
+moreButton.addEventListener("click", () =>{
+    console.log(q);
+    currPage++;
+    let data = getResults(q);
+    console.log(data);
+  
 
-//})
+
+
+})
